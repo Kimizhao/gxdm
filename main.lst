@@ -1,0 +1,407 @@
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 1   
+
+
+C51 COMPILER V7.06, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\12864²Ëµ¥ DS1302 DS18B20 AD0809\12864²Ëµ¥+DS1302+DS18B20+AD0809\main.c B
+                    -ROWSE DEBUG OBJECTEXTEND PRINT(.\main.lst) OBJECT(.\main.obj)
+
+stmt level    source
+
+   1          #include <reg52.h>
+   2          #include <intrins.h>
+   3          
+   4          sbit RS = P2^4;
+   5          sbit RW = P2^5;
+   6          sbit E  = P2^6;
+   7          sbit PSB= P2^1; //´®²¢¿ÚÑ¡Ôñ¶Ë  ²¢¸ß´®µÍ
+   8          #define DataPort P0   
+   9          
+  10          sbit KEY_UP=P3^0; //°´¼ü
+  11          sbit KEY_DOWN=P3^1;
+  12          sbit KEY_TURN=P3^2;
+  13          sbit KEY_TIMER=P3^3;
+  14          
+  15          unsigned char curr,currold;//È«¾Ö±äÁ¿£¬µ±Ç°¼ýÍ·Î»ÖÃ
+  16          unsigned char TU;
+  17          unsigned int speed_num;
+  18          unsigned int timer_num;
+  19          unsigned char turn_char[4];
+  20          
+  21          
+  22          
+  23          unsigned char code user16x16[]={ //¼ýÍ·Í¼Æ¬
+  24          0x00,0x00,0x80,0x00,0x40,0x00,0x20,0x00,
+  25          0x10,0x00,0x08,0x00,0x04,0x00,0x02,0x00,
+  26          0x04,0x00,0x08,0x00,0x10,0x00,0x20,0x00,
+  27          0x40,0x00,0x80,0x00,0x00,0x00,0x00,0x00,
+  28          };
+  29          
+  30          
+  31          
+  32          unsigned char code TAB1[]={"  TIMER: 065 SEC"};
+  33          unsigned char code TAB2[]={"  SPEED: 200 RPM"};
+  34          unsigned char code TAB3[]={"  TURN : CCW"};
+  35          unsigned char code TAB4[]={"  COUNT: 00"};
+  36          unsigned char code TAB5[]={" CW "};
+  37          unsigned char code TAB6[]={" CCW"};
+  38          unsigned char code TAB7[]={"0123456789"};
+  39          
+  40          /***********************************************
+  41                            ÑÓÊ±º¯Êý
+  42          ***********************************************/
+  43          void DelayUs2x(unsigned char t)
+  44          {   
+  45   1       while(--t);
+  46   1      }
+  47          
+  48          void DelayMs(unsigned char t)
+  49          {
+  50   1           
+  51   1       while(t--)
+  52   1       {
+  53   2           DelayUs2x(245);
+  54   2           DelayUs2x(245);
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 2   
+
+  55   2       }
+  56   1      }
+  57          
+  58          /***********************************************
+  59                          ÅÐÃ¦º¯Êý
+  60          ***********************************************/
+  61          void Check_Busy()
+  62          {  
+  63   1          RS=0;  //Ð´ÃüÁî
+  64   1          RW=1;  //¶Á×´Ì¬
+  65   1          E=1;
+  66   1          DataPort=0xff;
+  67   1          while((DataPort&0x80)==0x80);//Ã¦ÔòµÈ´ý
+  68   1          E=0;
+  69   1      }
+  70          
+  71          /***********************************************
+  72                          Ð´ÈëÃüÁî
+  73          ***********************************************/
+  74          void Write_Cmd(unsigned char Cmd)
+  75          {
+  76   1       Check_Busy();
+  77   1       RS=0;  //Ð´ÃüÁî
+  78   1       RW=0;  //write
+  79   1       E=1;
+  80   1       DataPort=Cmd;
+  81   1       DelayUs2x(5);
+  82   1       E=0;
+  83   1       DelayUs2x(5);
+  84   1      }
+  85          
+  86          /***********************************************
+  87                           Ð´ÈëÊý¾Ý
+  88          ***********************************************/
+  89          void Write_Data(unsigned char Data)
+  90          {
+  91   1       Check_Busy();
+  92   1       RS=1; //Ð´Êý¾Ý
+  93   1       RW=0; //write
+  94   1       E=1;
+  95   1       DataPort=Data;
+  96   1       DelayUs2x(5);
+  97   1       E=0;
+  98   1       DelayUs2x(5);
+  99   1      }
+ 100          
+ 101          /***********************************************
+ 102                         Òº¾§ÆÁ³õÊ¼»¯
+ 103          ***********************************************/
+ 104          void Init_ST7920()
+ 105          {  
+ 106   1         DelayMs(40);           //´óÓÚ40MSµÄÑÓÊ±³ÌÐò
+ 107   1         PSB=1;                 //ÉèÖÃÎª8BIT²¢¿Ú¹¤×÷Ä£Ê½
+ 108   1         DelayMs(1);            //ÑÓÊ±
+ 109   1         Write_Cmd(0x30);       //Ñ¡Ôñ»ù±¾Ö¸Áî¼¯
+ 110   1         DelayUs2x(50);         //ÑÓÊ±´óÓÚ100us
+ 111   1         Write_Cmd(0x30);       //Ñ¡Ôñ8bitÊý¾ÝÁ÷
+ 112   1         DelayUs2x(20);         //ÑÓÊ±´óÓÚ37us
+ 113   1         Write_Cmd(0x0c);       //¿ªÏÔÊ¾(ÎÞÓÎ±ê¡¢²»·´°×)
+ 114   1         DelayUs2x(50);         //ÑÓÊ±´óÓÚ100us
+ 115   1         Write_Cmd(0x01);       //Çå³ýÏÔÊ¾£¬²¢ÇÒÉè¶¨µØÖ·Ö¸ÕëÎª00H
+ 116   1         DelayMs(15);           //ÑÓÊ±´óÓÚ10ms
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 3   
+
+ 117   1         Write_Cmd(0x06);       //Ö¸¶¨ÔÚ×ÊÁÏµÄ¶ÁÈ¡¼°Ð´ÈëÊ±£¬Éè¶¨ÓÎ±êµÄÒÆ¶¯·½Ïò¼°Ö¸¶¨ÏÔÊ¾µÄÒÆÎ»£¬¹â±ê´ÓÓÒÏò×ó¼Ó1Î
+             -»ÒÆ¶¯
+ 118   1         DelayUs2x(50);         //ÑÓÊ±´óÓÚ100us
+ 119   1      }
+ 120          
+ 121          /***********************************************
+ 122                          ÓÃ»§×Ô¶¨Òå×Ö·û
+ 123          ***********************************************/
+ 124          void CGRAM()
+ 125          { 
+ 126   1           int i;
+ 127   1           Write_Cmd(0x30); 
+ 128   1           Write_Cmd(0x40);
+ 129   1           for(i=0;i<16;i++)
+ 130   1             {
+ 131   2              Write_Data(user16x16[i*2]);
+ 132   2              Write_Data(user16x16[i*2+1]);
+ 133   2            }
+ 134   1      }   
+ 135          
+ 136          /***********************************************
+ 137                         ÏÔÊ¾ÓÃ»§×Ô¶¨Òå×Ö·û
+ 138          ***********************************************/
+ 139          void DisplayCGRAM(unsigned char x,unsigned char y)
+ 140          { 
+ 141   1       switch(y)
+ 142   1           {
+ 143   2         case 1: Write_Cmd(0x80+x);break;
+ 144   2         case 2: Write_Cmd(0x90+x);break;
+ 145   2         case 3: Write_Cmd(0x88+x);break;
+ 146   2         case 4: Write_Cmd(0x98+x);break;
+ 147   2            default:break;
+ 148   2        }
+ 149   1          Write_Data(00);
+ 150   1          Write_Data(00);
+ 151   1      }         
+ 152          
+ 153          /***********************************************
+ 154                            ÏÔÊ¾×Ö·û´®
+ 155                      x:ºá×ø±êÖµ£¬·¶Î§0~8
+ 156                      y:×Ý×ø±êÖµ£¬·¶Î§1~4
+ 157          ***********************************************/
+ 158          void LCD_PutString(unsigned char x,unsigned char y,unsigned char code *s)
+ 159          { 
+ 160   1       switch(y)
+ 161   1           {
+ 162   2         case 1: Write_Cmd(0x80+x);break;
+ 163   2         case 2: Write_Cmd(0x90+x);break;
+ 164   2         case 3: Write_Cmd(0x88+x);break;
+ 165   2         case 4: Write_Cmd(0x98+x);break;
+ 166   2            default:break;
+ 167   2        }
+ 168   1       while(*s>0)
+ 169   1         { 
+ 170   2            Write_Data(*s);
+ 171   2            s++;
+ 172   2            DelayUs2x(50);
+ 173   2         }
+ 174   1      }
+ 175          
+ 176          /***********************************************
+ 177                               ÇåÆÁ
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 4   
+
+ 178          ***********************************************/
+ 179          void ClrScreen()
+ 180          { 
+ 181   1         Write_Cmd(0x01);
+ 182   1         DelayMs(15);
+ 183   1      }
+ 184              
+ 185          /***********************************************
+ 186                         µ÷ÓÃÏÔÊ¾¸üÐÂ
+ 187          ***********************************************/
+ 188          void DisplayUpdata(void)
+ 189          {   
+ 190   1      
+ 191   1                ClrScreen();
+ 192   1      LCD_PutString(0,1,TAB1);
+ 193   1      LCD_PutString(0,2,TAB2);
+ 194   1      LCD_PutString(0,3,TAB3);
+ 195   1      LCD_PutString(0,4,TAB4);
+ 196   1      
+ 197   1       DisplayCGRAM(0,curr%4+1); 
+ 198   1      }
+ 199          
+ 200          /***********************************************
+ 201          
+ 202          ÊýÖµ×ª»»
+ 203          ***********************************************/
+ 204          
+ 205          void Num_zhuanh(unsigned int x,unsigned char u)
+ 206          {
+ 207   1      unsigned int temp;
+ 208   1      unsigned char disp[3];
+ 209   1      temp=x;
+ 210   1      disp[0]=temp/100;
+ 211   1      disp[1]=(temp%100)/10;
+ 212   1      disp[2]=(temp%100)%10;
+ 213   1      //Write_Cmd(0x94);
+ 214   1      
+ 215   1       switch(u)
+ 216   1           {
+ 217   2         case 1: Write_Cmd(0x84);break;
+ 218   2         case 2: Write_Cmd(0x94);break;
+ 219   2         case 3: Write_Cmd(0x8C);break;
+ 220   2         case 4: Write_Cmd(0x9C);break;
+ 221   2            default:break;
+ 222   2        }
+ 223   1      
+ 224   1      Write_Data(TAB6[0]);
+ 225   1      Write_Data(TAB7[disp[0]]);
+ 226   1      Write_Data(TAB7[disp[1]]);
+ 227   1      Write_Data(TAB7[disp[2]]);
+ 228   1      }
+ 229          
+ 230          
+ 231          
+ 232          
+ 233          /***********************************************
+ 234                           TURN FUZ
+ 235          ***********************************************/
+ 236          
+ 237          void TURN_FZ(unsigned char v)
+ 238          
+ 239          {
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 5   
+
+ 240   1      int i;
+ 241   1      unsigned char p;
+ 242   1      p=v;
+ 243   1      if(p)
+ 244   1      {
+ 245   2         for(i=0;i<4;i++)
+ 246   2               {
+ 247   3                     turn_char[i]=TAB6[i];
+ 248   3                    }
+ 249   2      }
+ 250   1      if(!p)
+ 251   1      {
+ 252   2         for(i=0;i<4;i++)
+ 253   2               {
+ 254   3                     turn_char[i]=TAB5[i];
+ 255   3                    }
+ 256   2      }
+ 257   1      
+ 258   1      
+ 259   1      
+ 260   1      Write_Cmd(0x8C);
+ 261   1      
+ 262   1      for(i=0;i<4;i++)
+ 263   1      {
+ 264   2      Write_Data(turn_char[i]);
+ 265   2      
+ 266   2      }
+ 267   1      
+ 268   1      }
+ 269          
+ 270          
+ 271          
+ 272          
+ 273          /***********************************************
+ 274                           MAIN
+ 275          ***********************************************/
+ 276          void main()
+ 277          {
+ 278   1         timer_num=120;
+ 279   1         speed_num=278;
+ 280   1         timer_num=0;
+ 281   1         Init_ST7920(); 
+ 282   1         CGRAM(); //Ð´Èë×Ô¶¨Òå×Ö·û 
+ 283   1         DisplayUpdata();
+ 284   1         Num_zhuanh(timer_num,1);
+ 285   1         Num_zhuanh(speed_num,2);
+ 286   1         while(1)
+ 287   1         {     
+ 288   2           if(curr!=currold) //¹â±êÎ»ÖÃ±ä»¯£¬Ôò¸üÐÂÏÔÊ¾
+ 289   2            {
+ 290   3             DisplayUpdata();
+ 291   3             currold=curr;
+ 292   3            } 
+ 293   2       
+ 294   2         if(!KEY_UP)  
+ 295   2          {
+ 296   3           DelayMs(10);
+ 297   3           if(!KEY_UP)     
+ 298   3          {
+ 299   4              while(!KEY_UP);
+ 300   4            {
+ 301   5          if(curr<4)
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 6   
+
+ 302   5           //ÅÐ¶ÏÊý×éÖÐÊýÖµ¸öÊý
+ 303   5           { curr++; }
+ 304   5            }
+ 305   4          }
+ 306   3       }
+ 307   2      
+ 308   2        if(!KEY_DOWN) 
+ 309   2          {
+ 310   3           DelayMs(10);
+ 311   3             if(!KEY_DOWN)     
+ 312   3               {
+ 313   4                 while(!KEY_DOWN);
+ 314   4                     {
+ 315   5                          if(curr>0)
+ 316   5                          { curr--; }
+ 317   5                      }
+ 318   4                }
+ 319   3           }  
+ 320   2      
+ 321   2      
+ 322   2      
+ 323   2        if(!KEY_TURN) 
+ 324   2          {
+ 325   3           DelayMs(10);
+ 326   3             if(!KEY_TURN)     
+ 327   3               {
+ 328   4                        TU=!TU;
+ 329   4                              speed_num=speed_num+10;
+ 330   4                               Num_zhuanh(speed_num,2);
+ 331   4                 while(!KEY_TURN)
+ 332   4                     {
+ 333   5                          if(TU)
+ 334   5                          { LCD_PutString(4,3,TAB5);
+ 335   6                                      
+ 336   6                                              }
+ 337   5                          if(!TU)
+ 338   5                          { LCD_PutString(4,3,TAB6);
+ 339   6                                      //      speed_num=speed_num-10;
+ 340   6                                              }
+ 341   5                                      
+ 342   5                      }
+ 343   4      
+ 344   4                                      
+ 345   4                }
+ 346   3           }  
+ 347   2      
+ 348   2      
+ 349   2      
+ 350   2        if(!KEY_TIMER) 
+ 351   2          {
+ 352   3           DelayMs(10);
+ 353   3             if(!KEY_TIMER)     
+ 354   3               {
+ 355   4                 while(!KEY_TIMER);
+ 356   4                     {
+ 357   5                   timer_num=timer_num+5;
+ 358   5                               Num_zhuanh(timer_num,1);
+ 359   5                               TU=!TU;
+ 360   5                               TURN_FZ(TU);
+ 361   5      
+ 362   5                      }
+ 363   4                }
+C51 COMPILER V7.06   MAIN                                                                  08/05/2012 21:44:42 PAGE 7   
+
+ 364   3           }  
+ 365   2                                       
+ 366   2      
+ 367   2        }
+ 368   1      }
+ 369          
+ 370          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    835    ----
+   CONSTANT SIZE    =    112    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
