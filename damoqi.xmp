@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<TKStudioProject Name="damoqi" BuildTool="0" ToolVer="default" Version="3.00" Author="YinHandong[Òüº®¶¬]">
+    <Files>
+        <Filter Name="Source Group 1">
+            <File RelativePath=".\gxdm.c" />
+            <File RelativePath=".\pin_name.h" />
+            <File RelativePath=".\lcd12864.h" />
+            <File RelativePath=".\scaner.h" />
+            <File RelativePath=".\at24c02.c" />
+        </Filter>
+    </Files>
+    <Configurations>
+        <Configuration Name="Target 1" CodeMode="2" MemMode="0" RTOS="0" T51FL="0" SIMCLK="33.000000" OCM51="" OCR51="" CodeBank="" OutputDirectory=".\" OutputName="damoqi" GENAPP="1" GENLIB="0" ListingDirectory=".\" OPTLT="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" OPTDBG="1,-1,1,1,1,0,()" DEVICE="M6032" VENDOR="Acer Labs" FAMINY="0">
+            <Tool Name="C51Tool" C51FL="4853008" C51VA="0" C51DEF="" C51UDF="" C51MSC="" INCC5="" />
+            <Tool Name="A51Tool" A51FL="68" A51SET="" A51RST="" A51MSC="" INCA5="" />
+            <Tool Name="Lx51Tool" LX51FL="4" LX51COB="" LX51XDB="" LX51PDB="" LX51BIB="" LX51DAB="" LX51IDB="" LX51PRC="" LX51STK="" LX51COS="" LX51XDS="" LX51BIS="" LX51DAS="" LX51IDS="" LX51OVL="" LX51MSC="" LX51DWN="" />
+            <DeviceProperties Item0='SIM=S8051.DLL DP51.DLL(&quot;-p52&quot;)' Item1='MON=S8051.DLL TP51.DLL(&quot;-p52&quot;)' Item2="REGFILE=reg52.h" Item3='SFILE=&quot;LIB\STARTUP.A51&quot; (&quot;Standard 8051 Startup Code&quot;)' Item4="CPU=IRAM(0-0xFF) CLOCK(33000000) XRAM (0-0xFF) MODDP2" />
+            <DeviceDescription Description="8051-based Microcontroller with&#x0D;&#x0A;Dual Data Pointers,&#x0D;&#x0A;UART, 32 I/O lines, 3 Timers/Counters,&#x0D;&#x0A;6 Interrupts/2 priority levels,&#x0D;&#x0A;256 Bytes IDATA RAM,&#x0D;&#x0A;256 Bytes on-chip XRAM" />
+        </Configuration>
+    </Configurations>
+</TKStudioProject>
