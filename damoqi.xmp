@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="Windows-1252" ?>
-<TKStudioProject Name="damoqi" BuildTool="0" ToolVer="default" Version="3.00" Author="YinHandong[Òüº®¶¬]">
+<TKStudioProject Name="damoqi" BuildTool="0" ToolVer="default" Version="3.00" Author="YinHandong[Òüº®¶¬]" ProjectGUID="{6C9B7176-D3C8-43be-87E1-2BB6188F7EAD}">
     <Files>
         <Filter Name="Source Group 1">
             <File RelativePath=".\gxdm.c">
                 <Header RelativePath="COMMON.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\INTRINS.H" />
                 <Header RelativePath="AT24C02.H" />
                 <Header RelativePath="PIN_NAME.H" />
                 <Header RelativePath="LCD12864.H" />
+                <Header RelativePath="SCANER.H" />
             </File>
             <File RelativePath=".\pin_name.h" />
             <File RelativePath=".\lcd12864.h">
                 <Header RelativePath="COMMON.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\INTRINS.H" />
             </File>
             <File RelativePath=".\scaner.h" />
             <File RelativePath=".\at24c02.c">
                 <Header RelativePath="COMMON.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\INTRINS.H" />
             </File>
             <File RelativePath="lcd12864.c">
                 <Header RelativePath="COMMON.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
-                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="C:\KEIL\C51\INC\INTRINS.H" />
             </File>
             <File RelativePath="common.h" />
+            <File RelativePath="keyscan.c" />
         </Filter>
     </Files>
     <Configurations>

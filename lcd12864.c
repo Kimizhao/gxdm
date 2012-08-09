@@ -20,13 +20,13 @@ unsigned char code TAB1[]={"  TIMER: 065 SE2"};
 unsigned char code TAB2[]={"  SPEED: 200 RPM"};
 unsigned char code TAB3[]={"  TURN : CCW"};
 unsigned char code TAB4[]={"  COUNT: 00"};
-unsigned char code TAB5[]={" CW "};
-unsigned char code TAB6[]={" CCW"};
+unsigned char code TAB5[]={" CW "};//0
+unsigned char code TAB6[]={" CCW"};//!0
 unsigned char code TAB7[]={"0123456789"};
 unsigned char code TAB8[]={">"};
 
 /***********************************************
-                  延时函数
+    延时函数
 ***********************************************/
 void DelayUs2x(unsigned char t)
 {   
@@ -142,9 +142,52 @@ void DisplayCGRAM(unsigned char x,unsigned char y)
 	}
 	//Write_Data(00);
 	//Write_Data(00);
-	Write_Data(TAB8[0]);   //显示箭头
 	Write_Data(TAB7[y]);   //显示组别
-}         
+	Write_Data(TAB8[0]);   //显示箭头
+
+}
+
+void ClearGroupRow(unsigned char line,unsigned char y)
+{
+	switch (line)
+	{
+		case 1:
+			Write_Cmd(0x80);
+			Write_Data(TAB7[y]);   //显示组别
+			Write_Data(TAB8[0]);   //显示箭头
+			Write_Cmd(0x90);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			Write_Cmd(0x88);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			break;
+		case 2:
+			Write_Cmd(0x80);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			Write_Cmd(0x90);
+			Write_Data(TAB7[y]);
+			Write_Data(TAB8[0]);
+			Write_Cmd(0x88);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			break;
+		case 3:
+			Write_Cmd(0x80);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			Write_Cmd(0x90);
+			Write_Data(TAB1[0]);
+			Write_Data(TAB1[0]);
+			Write_Cmd(0x88);
+			Write_Data(TAB7[y]);
+			Write_Data(TAB8[0]);
+			break;
+	default:
+		break;
+	}
+}
 
 /***********************************************
                   显示字符串
@@ -182,7 +225,7 @@ void ClrScreen()
 /***********************************************
                调用显示更新
 ***********************************************/
-void DisplayUpdata(void)
+void DisplayUpdata(unsigned char curr)
 {   
 
 	ClrScreen();
@@ -191,7 +234,7 @@ void DisplayUpdata(void)
 	LCD_PutString(0,3,TAB3);
 	LCD_PutString(0,4,TAB4);
 
-	DisplayCGRAM(0,curr%4+1); 
+	DisplayCGRAM(0,curr%4);
 }
 
 /***********************************************
