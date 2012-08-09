@@ -1,10 +1,20 @@
-
-#include <reg52.h>
-#include <intrins.h>
+/*
+ *
+ *
+ */
+#include "common.h"
 #include "at24c02.h"
 #include"pin_name.h"
 #include "lcd12864.h"
 
+
+unsigned char curr,currold;
+unsigned char TU;
+unsigned int speed_num;
+unsigned int timer_num;
+unsigned char time_num1;
+//unsigned char code TAB5[]={" CW "};
+//unsigned char code TAB6[]={" CCW"};
 
 void main()
 {
@@ -17,7 +27,7 @@ void main()
   // CGRAM(); //写入自定义字符 
    DisplayUpdata();
    Num_zhuanh(speed_num,2);
-   WP=0;//写保护关掉
+   //WP=0;//写保护关掉
   
 WriteToROM(timer_num,speed_num,TU,0);
    speed_num=200;
@@ -77,14 +87,14 @@ ReadFromROM(&timer_num,&speed_num,&TU,0);
 			 Num_zhuanh(speed_num,2);
            while(!KEY_TURN)
                {
-                    if(TU)
+/*                     if(TU)
                     { LCD_PutString(4,3,TAB5);
 				
 					}
                     if(!TU)
                     { LCD_PutString(4,3,TAB6);
 				//	speed_num=speed_num-10;
-					}
+					} */
 				
                 }
 

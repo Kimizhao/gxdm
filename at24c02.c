@@ -7,7 +7,18 @@
  *V1.1
  * Modified by Kimi 20120806
  */
-#include "at24c02.h"
+#include "common.h"
+
+#define AddWr 0xae //Write Address
+#define AddRd 0xaf //Read Address
+
+/* 
+ * Global variable.
+ */
+sbit Sda=P1^2;
+sbit Scl=P1^1;
+/* No connect here- WP=0 */
+sbit WP=P1^0;
 
 void mDelay(unsigned char j)
 {

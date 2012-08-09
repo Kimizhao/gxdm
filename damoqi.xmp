@@ -2,11 +2,32 @@
 <TKStudioProject Name="damoqi" BuildTool="0" ToolVer="default" Version="3.00" Author="YinHandong[Òüº®¶¬]">
     <Files>
         <Filter Name="Source Group 1">
-            <File RelativePath=".\gxdm.c" />
+            <File RelativePath=".\gxdm.c">
+                <Header RelativePath="COMMON.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+                <Header RelativePath="AT24C02.H" />
+                <Header RelativePath="PIN_NAME.H" />
+                <Header RelativePath="LCD12864.H" />
+            </File>
             <File RelativePath=".\pin_name.h" />
-            <File RelativePath=".\lcd12864.h" />
+            <File RelativePath=".\lcd12864.h">
+                <Header RelativePath="COMMON.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+            </File>
             <File RelativePath=".\scaner.h" />
-            <File RelativePath=".\at24c02.c" />
+            <File RelativePath=".\at24c02.c">
+                <Header RelativePath="COMMON.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+            </File>
+            <File RelativePath="lcd12864.c">
+                <Header RelativePath="COMMON.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\REG52.H" />
+                <Header RelativePath="D:\KEIL\C51\INC\INTRINS.H" />
+            </File>
+            <File RelativePath="common.h" />
         </Filter>
     </Files>
     <Configurations>
