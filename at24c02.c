@@ -139,11 +139,38 @@ void WrToROM(unsigned char Data[],unsigned char Address,unsigned char Num)
 }
 
 /*
+ * Discription: Write datas to EEPROM(Page write).
+ * Data[]: datas(at24c02 8-Bytes/page)
+ * Address: Word Address
+ */
+/* void WritePageToROM(unsigned char Data[],unsigned char Address)
+{
+	unsigned char i;
+	unsigned char *PData;
+    unsigned char Num = 8;
+	PData=Data;
+
+    Start();
+    Send(AddWr);
+    Ack();
+    Send(Address);
+    Ack();
+        
+	for(i=0;i<Num;i++) {
+		Send(*(PData+i));
+		Ack();
+	}
+    
+    Stop();
+	mDelay(20);
+} */
+
+/*
  * Discription: Read datas from EEPROM.
- * Data[]: datas read
- * Address: subaddress = 0
+ * Data[]: datas
+ * Address: Word Address
  * Num: size of Data[]
- * example: RdFromROM(Number,0,5)
+ * Example: RdFromROM(Number,0,5)
  */
 void RdFromROM(unsigned char Data[],unsigned char Address,unsigned char Num)
 {
@@ -166,33 +193,112 @@ void RdFromROM(unsigned char Data[],unsigned char Address,unsigned char Num)
 	}
 }
 
-
-/* Useage.
-void main()
+/*
+ * Discription: Read data from EEPROM(Random read).
+ * Data: datas Random read
+ * Address: Word Address
+ */
+/* void RandomRdFromROM(unsigned char *Data,unsigned char Address)
 {
-	unsigned char Number[5]={0x06,0x5b,0x4f,0x66,0x5b};
+	unsigned char *PData;
+	PData=Data;
+
+    Start();
+    Send(AddWr);
+    Ack();
+    Send(Address);
+    Ack();
+    Start();
+    Send(AddRd);
+    Ack();
+    *PData=Read();
+    Scl=0;
+    NoAck();
+    Stop();
+
+} */
+
+/*
+ * Discription: Read Currend address data from EEPROM.
+ * Data[]: datas read
+ */
+/* void RdCurAddrFromROM(unsigned char *Data)
+{
+	unsigned char *PData;
+	PData=Data;
+
+    Start();
+    Send(AddRd);
+    Ack();
+    *(PData)=Read();
+    Scl=0;
+    NoAck();
+    Stop();
+
+} */
+
+/*
+ * Discription: Sequential read currned address data(n) from EEPROM.
+ * Data[]: Sequential datas read.
+ */
+/* void SeqRdCurAddrFromROM(unsigned char Data[],unsigned char Address, unsigned char Num)
+{
 	unsigned char i;
-	WP=0;
-	P2=0x00;
+    unsigned char *PData;
+	PData=Data;
 
-	WrToROM(Number,0,5);
-	mDelay(200);
-	Number[0]=0;
-	Number[1]=0;
-	Number[2]=0;
-	Number[3]=0;
-	Number[4]=0;
-	RdFromROM(Number,0,5);
+    Start();
+    Send(AddWr);
+    Ack();
+	Send(Address);
+	Ack();
+	Start();
+	Send(AddRd);
+	Ack();
+    for(i=0; i < Num; i++){
+        *(PData+i)=Read();
+        Scl=0;
+    }
+    
+    NoAck();
+    Stop();
+} */
 
-	while(1) { 
-
-		P0=Number[i];
-		mDelay(200);
-		mDelay(200);
-		i++;
-		if(i==5)
-		i=0;
-	}
+/*
+ */
+void WriteToROM(unsigned int timer, unsigned int speed, unsigned char turn, unsigned char gAddr)
+{
+	unsigned char tm[2],sp[2],tu;
+	
+	tm[0]=timer&0x00ff;
+	tm[1]=timer>>8;
+	
+	sp[0]=speed&0x00ff;
+	sp[1]=speed>>8;
+	
+	tu=turn;
+	
+	WrToROM(tm,gAddr,2);
+	WrToROM(sp,gAddr+2,2);
+	WrToROM(&tu,gAddr+4,1);
 
 }
+
+/*
  */
+void ReadFromROM(unsigned int *timer, unsigned int *speed, unsigned char *turn, unsigned char gAddr)
+{
+	unsigned char tm2[2],sp2[2],tu2;
+	
+	RdFromROM(tm2,gAddr,2);
+	RdFromROM(sp2,gAddr+2,2);
+	RdFromROM(&tu2,gAddr+4,1);
+	
+	*timer=tm2[0]+tm2[1]*256;
+	*speed=sp2[0]+sp2[1]*256;
+	*turn=tu2;
+	
+	/* temp3=temp1+temp2<<8;
+	timer=&temp3; */
+
+}
