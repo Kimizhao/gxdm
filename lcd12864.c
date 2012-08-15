@@ -151,7 +151,7 @@ void ClearGroupRow(unsigned char line,unsigned char y)
 {
 	switch (line)
 	{
-		case 1:
+		case LCD_TIMER_LINE:
 			Write_Cmd(0x80);
 			Write_Data(TAB7[y]);   //显示组别
 			Write_Data(TAB8[0]);   //显示箭头
@@ -162,7 +162,7 @@ void ClearGroupRow(unsigned char line,unsigned char y)
 			Write_Data(TAB1[0]);
 			Write_Data(TAB1[0]);
 			break;
-		case 2:
+		case LCD_SPEED_LINE:
 			Write_Cmd(0x80);
 			Write_Data(TAB1[0]);
 			Write_Data(TAB1[0]);
@@ -173,7 +173,7 @@ void ClearGroupRow(unsigned char line,unsigned char y)
 			Write_Data(TAB1[0]);
 			Write_Data(TAB1[0]);
 			break;
-		case 3:
+		case LCD_TURN_LINE:
 			Write_Cmd(0x80);
 			Write_Data(TAB1[0]);
 			Write_Data(TAB1[0]);
@@ -254,10 +254,10 @@ void Num_zhuanh(unsigned int x,unsigned char u)
 
 	switch(u)
 	{
-		case 1: Write_Cmd(0x84);break;
-		case 2: Write_Cmd(0x94);break;
-		case 3: Write_Cmd(0x8C);break;
-		case 4: Write_Cmd(0x9C);break;
+		case LCD_TIMER_LINE: Write_Cmd(0x84);break;
+		case LCD_SPEED_LINE: Write_Cmd(0x94);break;
+		case LCD_TURN_LINE: Write_Cmd(0x8C);break;
+		case LCD_COUNT_LINE: Write_Cmd(0x9C);break;
 		default:break;
 	}
 

@@ -44,4 +44,9 @@
 #define GROUP_9		25
 #define GROUP_10	28
 
+#define LCD_TIMER_LINE	1
+#define LCD_SPEED_LINE	2
+#define LCD_TURN_LINE	3
+#define LCD_COUNT_LINE	4
+
 #endif
