@@ -26,6 +26,10 @@
 #define BT_WATER 	0xbd
 #define BT_STOP  	0xbb
 #define BT_GREASE 	0xb7
+#define S13		0xee
+#define S14		0xed
+#define S15		0xeb
+#define S16		0xe7
 
 #define FUN_NON		0
 #define FUN_TIMER	1
@@ -48,5 +52,8 @@
 #define LCD_SPEED_LINE	2
 #define LCD_TURN_LINE	3
 #define LCD_COUNT_LINE	4
+
+#define START	1
+#define STOP	0
 
 #endif
